@@ -71,6 +71,7 @@ def install_dependencies():
         'python-pip',
     ]
     sudo('aptitude install %s' % ' '.join(packages))
+    sudo('pip install --upgrade pip')
 
 
 def _install_requirements():
