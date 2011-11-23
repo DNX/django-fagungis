@@ -40,7 +40,7 @@ def prod():
 
     ### START gunicorn settings ###
     env.gunicorn_bind = "127.0.0.1:8100"
-    env.gunicorn_logfile = "/tmp/gunicorn.log"
+    env.gunicorn_logfile = '%(django_user_home)s/logs/projects/%(project)s_gunicorn.log' % env
     env.gunicorn_workers = 4
     env.gunicorn_worker_class = "eventlet"
     ### END gunicorn settings ###
