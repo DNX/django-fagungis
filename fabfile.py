@@ -64,7 +64,7 @@ def _create_django_user():
         sudo('passwd %(django_user)s' % env)
 
 
-def install_dependencies():
+def _install_dependencies():
     ''' Ensure those Debian/Ubuntu packages are installed '''
     packages = [
         'mercurial',
@@ -138,7 +138,7 @@ def setup():
     start_time = datetime.now()
 
     sudo('cd .')  # do nothing, just authenticate sudo user
-    install_dependencies()
+    _install_dependencies()
     _create_django_user()
     _setup_directories()
     _hg_clone()
