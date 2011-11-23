@@ -3,6 +3,7 @@ from os.path import join
 from fabric.api import env, puts, abort, require, cd, hide
 from fabric.operations import sudo, settings, run
 from fabric.contrib import console
+from fabric.contrib.files import upload_template
 env.hosts = ['localhost', ]
 
 from fabric.colors import _wrap_with
@@ -31,9 +32,9 @@ def prod():
     env.code_root = join(env.projects_path, env.project)
     #  the path where manage.py and settings.py of this project is located
     env.django_project_root = join(env.code_root, 'sites', 'prod')
-    #  django media dir
+    #  django media dir, if not in code_root please adjust also nginx.conf
     env.django_media_path = join(env.code_root, 'media')
-    #  django sattic dir
+    #  django sattic dir, if not in code_root please adjust also nginx.conf
     env.django_static_path = join(env.code_root, 'static')
     #  virtualenv root
     env.virtenv = join(env.django_user_home, 'envs', env.project)
@@ -48,6 +49,9 @@ def prod():
     env.gunicorn_workers = 4
     env.gunicorn_worker_class = "eventlet"
     ### END gunicorn settings ###
+
+    ### START nginx settings ###
+    env.nginx_server_name = 'example.com'  # Only domain name, without 'www' or 'http://'
 
 
 def _create_django_user():
@@ -116,6 +120,12 @@ def _hg_clone():
     puts('%s correctly cloned.' % REPOSITORY)
 
 
+def _upload_nginx_conf():
+    # upload repmgr.conf on slave server
+    upload_template('conf/nginx.conf', '%(django_user_home)s/logs/nginx/%(project)s.conf' % env,
+                    context=env, backup=False)
+
+
 def setup():
     require('project', provided_by=PROVIDING_PROJECT)
     require('hosts', provided_by=PROVIDING_PROJECT)
@@ -134,6 +144,7 @@ def setup():
     _install_virtualenv()
     _create_virtualenv()
     _install_requirements()
+    _upload_nginx_conf()
 
     end_time = datetime.now()
     finish_message = '[%s] Correctly finished in %i seconds' % \
