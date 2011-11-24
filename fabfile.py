@@ -1,10 +1,10 @@
 from datetime import datetime
 from os.path import join
-from fabric.api import env, puts, abort, require, cd, hide
+from fabric.api import env, puts, abort, cd, hide, task
 from fabric.operations import sudo, settings, run
 from fabric.contrib import console
 from fabric.contrib.files import upload_template
-env.hosts = ['localhost', ]
+from projects import *
 
 from fabric.colors import _wrap_with
 
@@ -12,13 +12,13 @@ from fabric.colors import _wrap_with
 green_bg = _wrap_with('42')
 red_bg = _wrap_with('41')
 
-REPOSITORY = 'https://bitbucket.org/DNX/django-fagungis'
-PROVIDING_PROJECT = ('prod', )
 
-
+@task
 def prod():
     #  name of your project - no spaces, no special chars
     env.project = 'project_prod'
+    #  hg repository of your project
+    env.repository = 'https://bitbucket.org/DNX/django-fagungis'
     #  hosts to deploy your project, users must be sudoers
     env.hosts = ['root@192.168.1.1', ]
     #  system user, owner of the processes and code on your server
@@ -134,8 +134,8 @@ def _setup_directories():
     sudo('echo "<html><body>nothing here</body></html> " > %(django_user_home)s/htdocs/index.html' % env)
 
 
+@task
 def hg_pull():
-    require('hosts', provided_by=PROVIDING_PROJECT)
     with cd(env.code_root):
         run('hg pull -u')
 
@@ -146,10 +146,10 @@ def virtenvrun(command):
 
 
 def _hg_clone():
-    run('hg clone %s %s' % (REPOSITORY, env.code_root))
+    run('hg clone %s %s' % (env.repository, env.code_root))
 
 
-def test_nginx_conf():
+def _test_nginx_conf():
     sudo('nginx -t -c /etc/nginx/nginx.conf')
 
 
@@ -159,11 +159,11 @@ def _upload_nginx_conf():
     upload_template('conf/nginx.conf', nginx_file,
                     context=env, backup=False)
     sudo('ln -sf %s /etc/nginx/sites-enabled/' % nginx_file)
-    test_nginx_conf()
+    _test_nginx_conf()
     sudo('nginx -s reload')
 
 
-def reload_supervisorctl():
+def _reload_supervisorctl():
     sudo('%(supervisorctl)s reread' % env)
     sudo('%(supervisorctl)s reload' % env)
 
@@ -174,7 +174,7 @@ def _upload_supervisord_conf():
     upload_template('conf/supervisord.conf', supervisord_conf_file,
                     context=env, backup=False)
     sudo('ln -sf %s /etc/supervisor/conf.d/' % supervisord_conf_file)
-    reload_supervisorctl()
+    _reload_supervisorctl()
 
 
 def _prepare_django_project():
@@ -206,10 +206,8 @@ def _supervisor_restart():
         print green_bg("%s correctly started!" % env.project)
 
 
+@task
 def setup():
-    require('project', provided_by=PROVIDING_PROJECT)
-    require('hosts', provided_by=PROVIDING_PROJECT)
-    require('user', provided_by=PROVIDING_PROJECT)
     if env.ask_confirmation:
         if not console.confirm("Are you sure you want to setup %s?" % red_bg(env.project.upper()), default=False):
             abort("Aborting at user request.")
@@ -235,6 +233,7 @@ def setup():
     puts(finish_message)
 
 
+@task
 def deploy():
     _verify_sudo()
     if env.ask_confirmation:
