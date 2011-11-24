@@ -24,6 +24,8 @@ def prod():
     #  system user, owner of the processes and code on your server
     #  the user and it's home dir will be created if not present
     env.django_user = 'django'
+    # user group
+    env.django_user_group = env.django_user
     #  the code of your project will be located here
     env.django_user_home = join('/opt', env.django_user)
     #  projects path
@@ -48,6 +50,7 @@ def prod():
     env.gunicorn_logfile = '%(django_user_home)s/logs/projects/%(project)s_gunicorn.log' % env
     env.gunicorn_workers = 4
     env.gunicorn_worker_class = "eventlet"
+    env.gunicorn_loglevel = "info"
     ### END gunicorn settings ###
 
     ### START nginx settings ###
@@ -78,6 +81,9 @@ def _install_requirements():
     ''' you must have a file called requirements.txt in your project root'''
     requirements = join(env.code_root, 'requirements.txt')
     virtenvrun('pip install -r %s' % requirements)
+    # force gunicorn installation into your virtualenv, even if it's installed globally
+    # for more details: https://github.com/benoitc/gunicorn/pull/280
+    virtenvrun('pip install -I gunicorn')
 
 
 def _install_virtualenv():
@@ -122,8 +128,14 @@ def _hg_clone():
 
 
 def _upload_nginx_conf():
-    # upload repmgr.conf on slave server
+    """ upload nginx conf """
     upload_template('conf/nginx.conf', '%(django_user_home)s/logs/nginx/%(project)s.conf' % env,
+                    context=env, backup=False)
+
+
+def _upload_rungunicorn_script():
+    """ upload rungunicorn conf """
+    upload_template('scripts/rungunicorn.sh', '%(django_user_home)s/scripts/rungunicorn_%(project)s.sh' % env,
                     context=env, backup=False)
 
 
@@ -146,6 +158,7 @@ def setup():
     _create_virtualenv()
     _install_requirements()
     _upload_nginx_conf()
+    _upload_rungunicorn_script()
 
     end_time = datetime.now()
     finish_message = '[%s] Correctly finished in %i seconds' % \
