@@ -13,63 +13,16 @@ green_bg = _wrap_with('42')
 red_bg = _wrap_with('41')
 
 
-@task
-def prod():
-    #  name of your project - no spaces, no special chars
-    env.project = 'project_prod'
-    #  hg repository of your project
-    env.repository = 'https://bitbucket.org/DNX/django-fagungis'
-    #  hosts to deploy your project, users must be sudoers
-    env.hosts = ['root@192.168.1.1', ]
-    #  system user, owner of the processes and code on your server
-    #  the user and it's home dir will be created if not present
-    env.django_user = 'django'
-    # user group
-    env.django_user_group = env.django_user
-    #  the code of your project will be located here
-    env.django_user_home = join('/opt', env.django_user)
-    #  projects path
-    env.projects_path = join(env.django_user_home, 'projects')
-    #  the root path of your project
-    env.code_root = join(env.projects_path, env.project)
-    #  the path where manage.py and settings.py of this project is located
-    env.django_project_root = join(env.code_root, 'sites', 'prod')
-    #  django media dir, if not in code_root please adjust also nginx.conf
-    env.django_media_path = join(env.code_root, 'media')
-    #  django sattic dir, if not in code_root please adjust also nginx.conf
-    env.django_static_path = join(env.code_root, 'static')
-    #  do you use south in your django project?
-    env.south_used = False
-    #  virtualenv root
-    env.virtenv = join(env.django_user_home, 'envs', env.project)
-    #  some virtualenv options, must have at least one
-    env.virtenv_options = ['distribute', 'no-site-packages', ]
-    #  always ask user for confirmation when run any tasks
-    env.ask_confirmation = True
-
-    ### START gunicorn settings ###
-    env.gunicorn_bind = "127.0.0.1:8100"
-    env.gunicorn_logfile = '%(django_user_home)s/logs/projects/%(project)s_gunicorn.log' % env
-    env.gunicorn_workers = 4
-    env.gunicorn_worker_class = "eventlet"
-    env.gunicorn_loglevel = "info"
-    ### END gunicorn settings ###
-
-    ### START nginx settings ###
-    env.nginx_server_name = 'example.com'  # Only domain name, without 'www' or 'http://'
-    ### END nginx settings ###
-
-    ### START supervisor settings ###
-    env.supervisorctl = '/usr/bin/supervisorctl'  # supervisorctl script
-    env.supervisor_autostart = 'true'  # true or false
-    env.supervisor_autorestart = 'true'  # true or false
-    env.supervisor_redirect_stderr = 'true'  # true or false
-    env.supervisor_stdout_logfile = '%(django_user_home)s/logs/projects/supervisord_%(project)s.log' % env
-    ### END supervisor settings ###
+##########################
+## START Fagungis tasks ##
+##########################
 
 
 @task
 def setup():
+    if not test_configuration():
+        if not console.confirm("Configuration test %s! Do you want to continue?" % red_bg('failed'), default=False):
+            abort("Aborting at user request.")
     if env.ask_confirmation:
         if not console.confirm("Are you sure you want to setup %s?" % red_bg(env.project.upper()), default=False):
             abort("Aborting at user request.")
@@ -97,6 +50,9 @@ def setup():
 
 @task
 def deploy():
+    if not test_configuration():
+        if not console.confirm("Configuration test %s! Do you want to continue?" % red_bg('failed'), default=False):
+            abort("Aborting at user request.")
     _verify_sudo()
     if env.ask_confirmation:
         if not console.confirm("Are you sure you want to deploy in %s?" % red_bg(env.project.upper()), default=False):
@@ -122,6 +78,81 @@ def deploy():
 def hg_pull():
     with cd(env.code_root):
         run('hg pull -u')
+
+
+@task
+def test_configuration():
+    errors = []
+    if 'project' not in env or not env.project:
+        errors.append('Project name missing')
+    if 'repository' not in env or not env.repository:
+        errors.append('Repository url missing')
+    if 'hosts' not in env or not env.hosts:
+        errors.append('Hosts configuration missing')
+    if 'django_user' not in env or not env.django_user:
+        errors.append('Django user missing')
+    if 'django_user_group' not in env or not env.django_user_group:
+        errors.append('Django user group missing')
+    if 'django_user_home' not in env or not env.django_user_home:
+        errors.append('Django user home dir missing')
+    if 'projects_path' not in env or not env.projects_path:
+        errors.append('Project path configuration missing')
+    if 'code_root' not in env or not env.code_root:
+        errors.append('Code root configuration missing')
+    if 'django_project_root' not in env or not env.django_project_root:
+        errors.append('Django project root configuration missing')
+    if 'django_media_path' not in env or not env.django_media_path:
+        errors.append('Django media path configuration missing')
+    if 'django_static_path' not in env or not env.django_static_path:
+        errors.append('Django static path configuration missing')
+    if 'south_used' not in env:
+        errors.append('"south_used" configuration missing')
+    if 'virtenv' not in env or not env.virtenv:
+        errors.append('virtenv configuration missing')
+    if 'virtenv_options' not in env or not env.virtenv_options:
+        errors.append('"virtenv_options" configuration missing, you must have at least one option')
+    if 'ask_confirmation' not in env:
+        errors.append('"ask_confirmation" configuration missing')
+    if 'gunicorn_bind' not in env or not env.gunicorn_bind:
+        errors.append('"gunicorn_bind" configuration missing')
+    if 'gunicorn_logfile' not in env or not env.gunicorn_logfile:
+        errors.append('"gunicorn_logfile" configuration missing')
+    if 'gunicorn_workers' not in env or not env.gunicorn_workers:
+        errors.append('"gunicorn_workers" configuration missing, you must have at least one worker')
+    if 'gunicorn_worker_class' not in env or not env.gunicorn_worker_class:
+        errors.append('"gunicorn_worker_class" configuration missing')
+    if 'gunicorn_loglevel' not in env or not env.gunicorn_loglevel:
+        errors.append('"gunicorn_loglevel" configuration missing')
+    if 'nginx_server_name' not in env or not env.nginx_server_name:
+        errors.append('"nginx_server_name" configuration missing')
+    if 'supervisorctl' not in env or not env.supervisorctl:
+        errors.append('"supervisorctl" configuration missing')
+    if 'supervisor_autostart' not in env or not env.supervisor_autostart:
+        errors.append('"supervisor_autostart" configuration missing')
+    if 'supervisor_autorestart' not in env or not env.supervisor_autorestart:
+        errors.append('"supervisor_autorestart" configuration missing')
+    if 'supervisor_redirect_stderr' not in env or not env.supervisor_redirect_stderr:
+        errors.append('"supervisor_redirect_stderr" configuration missing')
+    if 'supervisor_stdout_logfile' not in env or not env.supervisor_stdout_logfile:
+        errors.append('"supervisor_stdout_logfile" configuration missing')
+
+    if errors:
+        if len(errors) == 26:
+            ''' all configuration missing '''
+            puts('Configuration missing! Please read README.rst first or go ahead at your own risk.')
+        else:
+            puts('Configuration test revealed %i errors:' % len(errors))
+            puts('%s\n\n* %s\n' % ('-' * 37, '\n* '.join(errors)))
+            puts('-' * 40)
+            puts('Please fix them or go ahead at your own risk.')
+        return False
+    puts('Configuration tests passed!')
+    return True
+
+
+########################
+## END Fagungis tasks ##
+########################
 
 
 def _create_django_user():
@@ -186,6 +217,8 @@ def _setup_directories():
     sudo('mkdir -p %(django_user_home)s/configs/nginx' % env)
     sudo('mkdir -p %(django_user_home)s/configs/supervisord' % env)
     sudo('mkdir -p %(django_user_home)s/scripts' % env)
+    sudo('mkdir -p %(django_user_home)s/htdocs' % env)
+    sudo('mkdir -p %(django_user_home)s/tmp' % env)
     sudo('mkdir -p %(virtenv)s' % env)
     sudo('echo "<html><body>nothing here</body></html> " > %(django_user_home)s/htdocs/index.html' % env)
 
