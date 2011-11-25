@@ -7,7 +7,7 @@ Introduction
 
 django-fagungis allow you to easy setup and deploy your django project on
 your linux server.
-django-fagungis will install and configure for you::
+django-fagungis will install and configure for you:
 
 * nginx
 
@@ -34,7 +34,7 @@ Do you need an example?
 
 Ok, let's assume you want to configure your django project called "projectus".
 So, what we know about it?
-we know::
+we know:
 
 * the project is called **projectus**
 
@@ -54,7 +54,7 @@ Import projectus tasks, so put in projects/__init__.py::
 
     from projectus import *
 
-Now apply some changes to earlier cloned projectus.py file::
+Now apply some changes to earlier cloned projectus.py file:
 
 * change task name::
 
@@ -132,6 +132,6 @@ How to test fagungis?
 **Please** test all operations manualy, at least at the first time, following
 this guide::
 
-    https://bitbucket.org/DNX/django-fagungis/wiki/Setup_test
+https://bitbucket.org/DNX/django-fagungis/wiki/Setup_test
 
 This will increase your confidence in using **fagungis**.
