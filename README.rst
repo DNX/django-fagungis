@@ -29,6 +29,15 @@ have prepared for you an example file in **projects/example.py** so you can
 create a copy of this file and modify it according to your needs. Also don't
 forget to include it in **projects/__init__.py** file.
 
+Test your configuration first!
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Fagungis come with its own automatic configuration tests. Each time you run
+**setup** or **deploy** task, configuration tests are called.
+Anyway, you can manually run these tests for your project configuration::
+
+    fab project_name test_configuration
+
+
 Do you need an example?
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -40,7 +49,7 @@ we know:
 
 * the hg repository is **https://bitbucket.org/DNX/projectus**
 
-* the ip of the server where you want to host it is:: 88.88.88.88
+* the ip of the server where you want to host it is: **88.88.88.88**
 
 * you want to use the domain **www.projectus.org** which point to 88.88.88.88
 
@@ -93,6 +102,14 @@ Now apply some changes to earlier cloned projectus.py file:
     # to:
     env.nginx_server_name = 'projectus.org'
 
+not, let's test our configuration::
+
+    fab projectus test_configuration
+
+you must see a message::
+
+    Configuration tests passed!
+
 
 Setup your project
 ------------------
@@ -122,7 +139,7 @@ simple as typing::
 As for setup you may be asked for some info during the deployment.
 At the end you must view a message saying that the deployment successful
 ended.
-Now navigate to http://projectus.org in your browser and assure that
+Now navigate to **http://projectus.org** in your browser and assure that
 everything is O.K.
 
 
