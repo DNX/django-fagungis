@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from fagungis.fabfile import *
+from fagungis.tasks import *
 from os.path import join
 from fabric.api import env, task
 
