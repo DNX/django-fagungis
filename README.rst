@@ -58,32 +58,32 @@ Now apply some changes to earlier cloned projectus.py file:
 
 * change task name::
 
-    # from::
+    # from:
     @task
     def example():
-    # to::
+    # to:
     @task
     def projectus():
 
 * change project name::
 
-    # from::
+    # from:
     env.project = 'example_production'
-    # to::
+    # to:
     env.project = 'projectus'
 
 * change repository::
 
-    # from::
+    # from:
     env.repository = 'https://bitbucket.org/DNX/example'
-    # to::
+    # to:
     env.repository = 'https://bitbucket.org/DNX/projectus'
 
 * change server ip::
 
-    # from::
+    # from:
     env.hosts = ['root@192.168.1.1', ]
-    # to::
+    # to:
     env.hosts = ['root@88.88.88.88', ]
 
 * change nginx server name::
@@ -130,7 +130,7 @@ How to test fagungis?
 =====================
 
 **Please** test all operations manualy, at least at the first time, following
-this guide::
+this guide:
 
 https://bitbucket.org/DNX/django-fagungis/wiki/Setup_test
 

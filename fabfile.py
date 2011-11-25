@@ -68,6 +68,62 @@ def prod():
     ### END supervisor settings ###
 
 
+@task
+def setup():
+    if env.ask_confirmation:
+        if not console.confirm("Are you sure you want to setup %s?" % red_bg(env.project.upper()), default=False):
+            abort("Aborting at user request.")
+    puts(green_bg('Start setup...'))
+    start_time = datetime.now()
+
+    _verify_sudo
+    _install_dependencies()
+    _create_django_user()
+    _setup_directories()
+    _hg_clone()
+    _install_virtualenv()
+    _create_virtualenv()
+    _install_gunicorn()
+    _install_requirements()
+    _upload_nginx_conf()
+    _upload_rungunicorn_script()
+    _upload_supervisord_conf()
+
+    end_time = datetime.now()
+    finish_message = '[%s] Correctly finished in %i seconds' % \
+    (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
+    puts(finish_message)
+
+
+@task
+def deploy():
+    _verify_sudo()
+    if env.ask_confirmation:
+        if not console.confirm("Are you sure you want to deploy in %s?" % red_bg(env.project.upper()), default=False):
+            abort("Aborting at user request.")
+    puts(green_bg('Start setup...'))
+    start_time = datetime.now()
+
+    hg_pull()
+    _install_requirements()
+    _upload_nginx_conf()
+    _upload_rungunicorn_script()
+    _prepare_django_project()
+    _prepare_media_path()
+    _supervisor_restart()
+
+    end_time = datetime.now()
+    finish_message = '[%s] Correctly deployed in %i seconds' % \
+    (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
+    puts(finish_message)
+
+
+@task
+def hg_pull():
+    with cd(env.code_root):
+        run('hg pull -u')
+
+
 def _create_django_user():
     with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
         res = sudo('useradd -d %(django_user_home)s -m -r %(django_user)s' % env)
@@ -134,12 +190,6 @@ def _setup_directories():
     sudo('echo "<html><body>nothing here</body></html> " > %(django_user_home)s/htdocs/index.html' % env)
 
 
-@task
-def hg_pull():
-    with cd(env.code_root):
-        run('hg pull -u')
-
-
 def virtenvrun(command):
     activate = 'source %s/bin/activate' % env.virtenv
     run(activate + ' && ' + command)
@@ -204,53 +254,3 @@ def _supervisor_restart():
         print red_bg("%s NOT STARTED!" % env.project)
     else:
         print green_bg("%s correctly started!" % env.project)
-
-
-@task
-def setup():
-    if env.ask_confirmation:
-        if not console.confirm("Are you sure you want to setup %s?" % red_bg(env.project.upper()), default=False):
-            abort("Aborting at user request.")
-    puts(green_bg('Start setup...'))
-    start_time = datetime.now()
-
-    _verify_sudo
-    _install_dependencies()
-    _create_django_user()
-    _setup_directories()
-    _hg_clone()
-    _install_virtualenv()
-    _create_virtualenv()
-    _install_gunicorn()
-    _install_requirements()
-    _upload_nginx_conf()
-    _upload_rungunicorn_script()
-    _upload_supervisord_conf()
-
-    end_time = datetime.now()
-    finish_message = '[%s] Correctly finished in %i seconds' % \
-    (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
-    puts(finish_message)
-
-
-@task
-def deploy():
-    _verify_sudo()
-    if env.ask_confirmation:
-        if not console.confirm("Are you sure you want to deploy in %s?" % red_bg(env.project.upper()), default=False):
-            abort("Aborting at user request.")
-    puts(green_bg('Start setup...'))
-    start_time = datetime.now()
-
-    hg_pull()
-    _install_requirements()
-    _upload_nginx_conf()
-    _upload_rungunicorn_script()
-    _prepare_django_project()
-    _prepare_media_path()
-    _supervisor_restart()
-
-    end_time = datetime.now()
-    finish_message = '[%s] Correctly deployed in %i seconds' % \
-    (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
-    puts(finish_message)
