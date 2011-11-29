@@ -55,8 +55,8 @@ Configuration
 -------------
 
 First of all you must configure your project task settings. To do this we
-have prepared for you an example file in **path/to/fagungis/example_fabfile.py
-** so you can create a copy of this file and modify it according to your
+have prepared for you an example file in **path/to/fagungis/example_fabfile.py**
+so you can create a copy of this file and modify it according to your
 needs.
 
 Test your configuration first!
