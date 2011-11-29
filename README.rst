@@ -48,6 +48,9 @@ either install them, or run::
 How to use fagungis?
 ====================
 
+If you have already installed Fagungis, you must proceed with the
+configuration of your project.
+
 Configuration
 -------------
 
