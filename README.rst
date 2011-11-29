@@ -59,6 +59,21 @@ have prepared for you an example file in **path/to/fagungis/example_fabfile.py**
 so you can create a copy of this file and modify it according to your
 needs.
 
+Please pay attention to not have any tasks in your fabfile.py called:
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+* setup
+
+* deploy
+
+* test_configuration
+
+or
+
+* hg_pull
+
+because these names are reserved by Fagungis.
+
 Test your configuration first!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Fagungis come with its own automatic configuration tests. Each time you run

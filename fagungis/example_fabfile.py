@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from fagungis.tasks import *
 from os.path import join
 from fabric.api import env, task
+from fagungis.tasks import *
 
 
 @task
@@ -40,9 +40,10 @@ def example():
     env.ask_confirmation = True
 
     ### START gunicorn settings ###
+    #  be sure to not have anything running on that port
     env.gunicorn_bind = "127.0.0.1:8100"
     env.gunicorn_logfile = '%(django_user_home)s/logs/projects/%(project)s_gunicorn.log' % env
-    env.gunicorn_workers = 4
+    env.gunicorn_workers = 2
     env.gunicorn_worker_class = "eventlet"
     env.gunicorn_loglevel = "info"
     ### END gunicorn settings ###
