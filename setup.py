@@ -10,7 +10,6 @@ CLASSIFIERS = [
     'Framework :: Django',
     'Intended Audience :: Developers',
     'Intended Audience :: System Administrators',
-    'License :: BSD License',
     'Operating System :: MacOS :: MacOS X',
     'Operating System :: Unix',
     'Operating System :: POSIX',
