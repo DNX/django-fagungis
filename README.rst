@@ -17,6 +17,33 @@ django-fagungis will install and configure for you:
 
 * virtualenv
 
+Installation
+============
+
+There are a few different ways to install Fagungis:
+
+Using pip
+~~~~~~~~~
+If you have pip install available on your system, just type::
+
+    pip install Fagungis
+
+If you've already got an old version of Fagungis, and want to upgrade, use::
+
+    pip install -U Fagungis
+
+Installing from a directory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If you've obtained a copy of Fagungis using either Mercurial or a downloadable
+archive, you'll need to install the copy you have system-wide. Try running::
+
+    python setup.py develop
+
+If that fails, you don't have ``setuptools`` or an equivalent installed;
+either install them, or run::
+
+    python setup.py install
+
 
 How to use fagungis?
 ====================
@@ -25,9 +52,9 @@ Configuration
 -------------
 
 First of all you must configure your project task settings. To do this we
-have prepared for you an example file in **projects/example.py** so you can
-create a copy of this file and modify it according to your needs. Also don't
-forget to include it in **projects/__init__.py** file.
+have prepared for you an example file in **path/to/fagungis/example_fabfile.py
+** so you can create a copy of this file and modify it according to your
+needs.
 
 Test your configuration first!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,13 +84,10 @@ we know:
 Ok, it's enough to configure and deploy your project, let's do it!
 Clone projects/example.py::
 
-    cp projects/example.py projects/projectus.py
+    cp path/to/fagungis/example_fabfile.py path/to/projectus/fabfile.py
 
-Import projectus tasks, so put in projects/__init__.py::
 
-    from projectus import *
-
-Now apply some changes to earlier cloned projectus.py file:
+Now apply some changes to earlier cloned fabfile.py file in your project root:
 
 * change task name::
 
