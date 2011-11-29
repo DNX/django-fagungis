@@ -1,6 +1,13 @@
 Changelog
 =============================================================
 
+Version 0.0.5
+-------------------------------------------------------------
+
+* Restructured example_fabfile.py
+* Updated README file
+* Removed projects folder from MANIFEST.in
+
 Version 0.0.4
 -------------------------------------------------------------
 
