@@ -23,7 +23,7 @@ Installation
 There are a few different ways to install Fagungis:
 
 Using pip
-~~~~~~~~~
+---------
 If you have pip install available on your system, just type::
 
     pip install Fagungis
@@ -33,7 +33,7 @@ If you've already got an old version of Fagungis, and want to upgrade, use::
     pip install -U Fagungis
 
 Installing from a directory
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 If you've obtained a copy of Fagungis using either Mercurial or a downloadable
 archive, you'll need to install the copy you have system-wide. Try running::
 
