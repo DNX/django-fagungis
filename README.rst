@@ -24,7 +24,7 @@ How to use fagungis?
 Configuration
 -------------
 
-First of all you must configure your project/server settings. To do this we
+First of all you must configure your project task settings. To do this we
 have prepared for you an example file in **projects/example.py** so you can
 create a copy of this file and modify it according to your needs. Also don't
 forget to include it in **projects/__init__.py** file.
