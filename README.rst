@@ -26,11 +26,11 @@ Using pip
 ---------
 If you have pip install available on your system, just type::
 
-    pip install Fagungis
+    pip install django-fagungis
 
 If you've already got an old version of Fagungis, and want to upgrade, use::
 
-    pip install -U Fagungis
+    pip install -U django-fagungis
 
 Installing from a directory
 ---------------------------
@@ -59,6 +59,8 @@ have prepared for you an example file in **path/to/fagungis/example_fabfile.py**
 so you can create a copy of this file and modify it according to your
 needs.
 
+You can find also an online version of **example_fabfile.py** here: https://bitbucket.org/DNX/django-fagungis/src/tip/fagungis/example_fabfile.py
+
 Please pay attention to not have any tasks in your fabfile.py called:
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -82,6 +84,7 @@ Anyway, you can manually run these tests for your project configuration::
 
     fab project_name test_configuration
 
+If you run **test_configuration** manually, you'll observe some output about all your project settings.
 
 Do you need an example?
 ~~~~~~~~~~~~~~~~~~~~~~~
