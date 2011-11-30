@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from datetime import datetime
+import locale
 from os.path import join, abspath, dirname, isfile
 from fabric.api import env, puts, abort, cd, hide, task
 from fabric.operations import sudo, settings, run
@@ -7,6 +10,8 @@ from fabric.contrib.files import upload_template
 
 from fabric.colors import _wrap_with, green
 
+locale.setlocale(locale.LC_ALL, '')
+sep = lambda s: locale.format('%s', s, 3)
 
 green_bg = _wrap_with('42')
 red_bg = _wrap_with('41')
@@ -84,11 +89,10 @@ def hg_pull():
 def test_configuration(verbose=True):
     errors = []
     parameters_info = []
-    import pdb; pdb.set_trace()
     if 'project' not in env or not env.project:
         errors.append('Project name missing')
     elif verbose:
-        parameters_info.append(('Project name', env.project))
+        parameters_info.append(("Project name", env.project))
     if 'repository' not in env or not env.repository:
         errors.append('Repository url missing')
     elif verbose:
@@ -202,7 +206,8 @@ def test_configuration(verbose=True):
         return False
     elif verbose:
         for parameter in parameters_info:
-            puts('%s: %s' % (parameter[0], green(parameter[1])))
+            width = "%80s" % green(sep(parameter[1]))
+            puts('%s:%s' % (parameter[0], width))
     puts('Configuration tests passed!')
     return True
 
