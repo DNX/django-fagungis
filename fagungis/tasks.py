@@ -21,7 +21,7 @@ fagungis_path = dirname(abspath(__file__))
 
 @task
 def setup():
-    if not test_configuration(False):
+    if not test_configuration(env.ask_confirmation):
         if not console.confirm("Configuration test %s! Do you want to continue?" % red_bg('failed'), default=False):
             abort("Aborting at user request.")
     if env.ask_confirmation:
@@ -51,7 +51,7 @@ def setup():
 
 @task
 def deploy():
-    if not test_configuration(False):
+    if not test_configuration(env.ask_confirmation):
         if not console.confirm("Configuration test %s! Do you want to continue?" % red_bg('failed'), default=False):
             abort("Aborting at user request.")
     _verify_sudo()
@@ -202,7 +202,9 @@ def test_configuration(verbose=True):
         return False
     elif verbose:
         for parameter in parameters_info:
-            puts('%s %s' % (parameter[0].ljust(27), green(parameter[1])))
+            parameter_formatting = "'%s'" if isinstance(parameter[1], str) else "%s"
+            parameter_value = parameter_formatting % parameter[1]
+            puts('%s %s' % (parameter[0].ljust(27), green(parameter_value)))
     puts('Configuration tests passed!')
     return True
 
