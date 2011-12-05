@@ -1,10 +1,10 @@
 Changelog
 =============================================================
 
-Version devel
+Version 0.0.9
 -------------------------------------------------------------
 
-* Displaying configuration info if ask_confirmation id True
+* Always display configuration info
 
 Version 0.0.8
 -------------------------------------------------------------

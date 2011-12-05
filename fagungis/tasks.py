@@ -21,9 +21,11 @@ fagungis_path = dirname(abspath(__file__))
 
 @task
 def setup():
-    if not test_configuration(env.ask_confirmation):
+    #  test configuration start
+    if not test_configuration():
         if not console.confirm("Configuration test %s! Do you want to continue?" % red_bg('failed'), default=False):
             abort("Aborting at user request.")
+    #  test configuration end
     if env.ask_confirmation:
         if not console.confirm("Are you sure you want to setup %s?" % red_bg(env.project.upper()), default=False):
             abort("Aborting at user request.")
@@ -51,9 +53,11 @@ def setup():
 
 @task
 def deploy():
-    if not test_configuration(env.ask_confirmation):
+    #  test configuration start
+    if not test_configuration():
         if not console.confirm("Configuration test %s! Do you want to continue?" % red_bg('failed'), default=False):
             abort("Aborting at user request.")
+    #  test configuration end
     _verify_sudo()
     if env.ask_confirmation:
         if not console.confirm("Are you sure you want to deploy in %s?" % red_bg(env.project.upper()), default=False):
