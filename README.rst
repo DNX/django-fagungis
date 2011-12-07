@@ -103,9 +103,13 @@ we know:
 
 
 Ok, it's enough to configure and deploy your project, let's do it!
-Clone projects/example.py::
+Clone example_fabfile.py::
 
     cp path/to/fagungis/example_fabfile.py path/to/projectus/fabfile.py
+
+or::
+
+    wget -O fabfile.py https://bitbucket.org/DNX/django-fagungis/raw/tip/fagungis/example_fabfile.py
 
 
 Now apply some changes to earlier cloned fabfile.py file in your project root:
