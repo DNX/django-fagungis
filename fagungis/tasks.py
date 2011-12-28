@@ -248,7 +248,7 @@ def _install_dependencies():
         'python-pip',
         'supervisor',
     ]
-    sudo('aptitude install %s' % ' '.join(packages))
+    sudo('apt-get install %s' % ' '.join(packages))
     _install_nginx()
     sudo('pip install --upgrade pip')
 
