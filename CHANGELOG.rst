@@ -1,10 +1,11 @@
 Changelog
 =============================================================
 
-Version DEVEL
+Version 0.0.11
 -------------------------------------------------------------
 
 * Added client_max_body_size nginx server configuration
+* Added additional_packages config parameter
 
 Version 0.0.10
 -------------------------------------------------------------
