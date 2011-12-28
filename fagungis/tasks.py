@@ -173,6 +173,12 @@ def test_configuration(verbose=True):
         errors.append('"nginx_server_name" configuration missing')
     elif verbose:
         parameters_info.append(('nginx_server_name', env.nginx_server_name))
+    if 'nginx_client_max_body_size' not in env or not env.nginx_client_max_body_size:
+        errors.append('"nginx_client_max_body_size" configuration missing')
+    elif not isinstance(env.nginx_client_max_body_size, int):
+        errors.append('"nginx_client_max_body_size" must be an integer value')
+    elif verbose:
+        parameters_info.append(('nginx_client_max_body_size', env.nginx_client_max_body_size))
     if 'supervisorctl' not in env or not env.supervisorctl:
         errors.append('"supervisorctl" configuration missing')
     elif verbose:
@@ -244,11 +250,12 @@ def _install_nginx():
 def _install_dependencies():
     ''' Ensure those Debian/Ubuntu packages are installed '''
     packages = [
-        'mercurial',
         'python-pip',
         'supervisor',
     ]
     sudo('apt-get install %s' % ' '.join(packages))
+    if 'additional_packages' in env and env.additional_packages:
+        sudo('apt-get install %s' % ' '.join(env.additional_packages))
     _install_nginx()
     sudo('pip install --upgrade pip')
 

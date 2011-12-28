@@ -13,6 +13,10 @@ def example():
     env.repository = 'https://bitbucket.org/DNX/example'
     #  hosts to deploy your project, users must be sudoers
     env.hosts = ['root@192.168.1.1', ]
+    # additional packages to be installed on the server
+    env.additional_packages = [
+        'mercurial',
+    ]
     #  system user, owner of the processes and code on your server
     #  the user and it's home dir will be created if not present
     env.django_user = 'django'
@@ -50,6 +54,7 @@ def example():
 
     ### START nginx settings ###
     env.nginx_server_name = 'example.com'  # Only domain name, without 'www' or 'http://'
+    env.nginx_client_max_body_size = 10  # Maximum accepted body size of client request, in MB
     ### END nginx settings ###
 
     ### START supervisor settings ###
