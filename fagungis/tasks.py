@@ -221,11 +221,11 @@ def test_configuration(verbose=True):
 def _create_django_user():
     with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
         res = sudo('useradd -d %(django_user_home)s -m -r %(django_user)s' % env)
-        if 'already exists' in res:
-            puts('User \'%(django_user)s\' already exists, will not be changed.' % env)
-            return
-        #  set password
-        sudo('passwd %(django_user)s' % env)
+    if 'already exists' in res:
+        puts('User \'%(django_user)s\' already exists, will not be changed.' % env)
+        return
+    #  set password
+    sudo('passwd %(django_user)s' % env)
 
 
 def _verify_sudo():
