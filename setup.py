@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 import os
-import fagungis
 
 CLASSIFIERS = [
     'Development Status :: 3 - Alpha',
@@ -27,7 +26,7 @@ CLASSIFIERS = [
 
 setup(
     name="django-fagungis",
-    version=fagungis.__version__,
+    version=__import__('fagungis').__version__,
     url='https://bitbucket.org/DNX/django-fagungis/wiki/Home',
     download_url='http://bitbucket.org/DNX/django-fagungis/downloads',
     license='BSD License',
