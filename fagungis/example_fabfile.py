@@ -30,9 +30,9 @@ def example():
     env.code_root = join(env.projects_path, env.project)
     #  the path where manage.py and settings.py of this project is located
     env.django_project_root = join(env.code_root, 'sites', 'prod')
-    #  django media dir, if not in code_root please adjust also nginx.conf
+    #  django media dir
     env.django_media_path = join(env.code_root, 'media')
-    #  django sattic dir, if not in code_root please adjust also nginx.conf
+    #  django static dir
     env.django_static_path = join(env.code_root, 'static')
     #  do you use south in your django project?
     env.south_used = False

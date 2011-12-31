@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from copy import copy
 from datetime import datetime
-from os.path import join, abspath, dirname, isfile
+from os.path import join, abspath, dirname, isfile, basename
 from fabric.api import env, puts, abort, cd, hide, task
 from fabric.operations import sudo, settings, run
 from fabric.contrib import console
@@ -333,8 +334,18 @@ def _upload_nginx_conf():
         template = 'conf/nginx.conf'
     else:
         template = '%s/conf/nginx.conf' % fagungis_path
+    context = copy(env)
+    # Media directory
+    path = env.django_media_path.rstrip('/')
+    context['django_media_location'] = basename(path)
+    context['django_media_root'] = dirname(path)
+    # Static directory
+    path = env.django_static_path.rstrip('/')
+    context['django_static_location'] = basename(path)
+    context['django_static_root'] = dirname(path)
+    # Template
     upload_template(template, env.nginx_conf_file,
-                    context=env, backup=False)
+                    context=context, backup=False)
     sudo('ln -sf %s /etc/nginx/sites-enabled/' % env.nginx_conf_file)
     _test_nginx_conf()
     sudo('nginx -s reload')
@@ -367,7 +378,9 @@ def _prepare_django_project():
 
 
 def _prepare_media_path():
-    sudo('chmod -R 775 %s' % env.django_media_path)
+    path = env.django_media_path.rstrip('/')
+    sudo('mkdir -p %s' % path)
+    sudo('chmod -R 775 %s' % path)
 
 
 def _upload_rungunicorn_script():
