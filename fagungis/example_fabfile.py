@@ -47,6 +47,7 @@ def example():
     #  be sure to not have anything running on that port
     env.gunicorn_bind = "127.0.0.1:8100"
     env.gunicorn_logfile = '%(django_user_home)s/logs/projects/%(project)s_gunicorn.log' % env
+    env.rungunicorn_script = '%(django_user_home)s/scripts/rungunicorn_%(project)s.sh' % env
     env.gunicorn_workers = 2
     env.gunicorn_worker_class = "eventlet"
     env.gunicorn_loglevel = "info"
@@ -54,7 +55,9 @@ def example():
 
     ### START nginx settings ###
     env.nginx_server_name = 'example.com'  # Only domain name, without 'www' or 'http://'
+    env.nginx_conf_file = '%(django_user_home)s/configs/nginx/%(project)s.conf' % env
     env.nginx_client_max_body_size = 10  # Maximum accepted body size of client request, in MB
+    env.nginx_htdocs = '%(django_user_home)s/htdocs' % env
     ### END nginx settings ###
 
     ### START supervisor settings ###
@@ -63,4 +66,5 @@ def example():
     env.supervisor_autorestart = 'true'  # true or false
     env.supervisor_redirect_stderr = 'true'  # true or false
     env.supervisor_stdout_logfile = '%(django_user_home)s/logs/projects/supervisord_%(project)s.log' % env
+    env.supervisord_conf_file = '%(django_user_home)s/configs/supervisord/%(project)s.conf' % env
     ### END supervisor settings ###

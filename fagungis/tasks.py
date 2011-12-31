@@ -157,6 +157,10 @@ def test_configuration(verbose=True):
         errors.append('"gunicorn_logfile" configuration missing')
     elif verbose:
         parameters_info.append(('gunicorn_logfile', env.gunicorn_logfile))
+    if 'rungunicorn_script' not in env or not env.rungunicorn_script:
+        errors.append('"rungunicorn_script" configuration missing')
+    elif verbose:
+        parameters_info.append(('rungunicorn_script', env.rungunicorn_script))
     if 'gunicorn_workers' not in env or not env.gunicorn_workers:
         errors.append('"gunicorn_workers" configuration missing, you must have at least one worker')
     elif verbose:
@@ -173,12 +177,20 @@ def test_configuration(verbose=True):
         errors.append('"nginx_server_name" configuration missing')
     elif verbose:
         parameters_info.append(('nginx_server_name', env.nginx_server_name))
+    if 'nginx_conf_file' not in env or not env.nginx_conf_file:
+        errors.append('"nginx_conf_file" configuration missing')
+    elif verbose:
+        parameters_info.append(('nginx_conf_file', env.nginx_conf_file))
     if 'nginx_client_max_body_size' not in env or not env.nginx_client_max_body_size:
         errors.append('"nginx_client_max_body_size" configuration missing')
     elif not isinstance(env.nginx_client_max_body_size, int):
         errors.append('"nginx_client_max_body_size" must be an integer value')
     elif verbose:
         parameters_info.append(('nginx_client_max_body_size', env.nginx_client_max_body_size))
+    if 'nginx_htdocs' not in env or not env.nginx_htdocs:
+        errors.append('"nginx_htdocs" configuration missing')
+    elif verbose:
+        parameters_info.append(('nginx_htdocs', env.nginx_htdocs))
     if 'supervisorctl' not in env or not env.supervisorctl:
         errors.append('"supervisorctl" configuration missing')
     elif verbose:
@@ -199,6 +211,10 @@ def test_configuration(verbose=True):
         errors.append('"supervisor_stdout_logfile" configuration missing')
     elif verbose:
         parameters_info.append(('supervisor_stdout_logfile', env.supervisor_stdout_logfile))
+    if 'supervisord_conf_file' not in env or not env.supervisord_conf_file:
+        errors.append('"supervisord_conf_file" configuration missing')
+    elif verbose:
+        parameters_info.append(('supervisord_conf_file', env.supervisord_conf_file))
 
     if errors:
         if len(errors) == 26:
@@ -282,15 +298,16 @@ def _create_virtualenv():
 
 def _setup_directories():
     sudo('mkdir -p %(projects_path)s' % env)
-    sudo('mkdir -p %(django_user_home)s/logs/nginx' % env)
-    sudo('mkdir -p %(django_user_home)s/logs/projects' % env)
-    sudo('mkdir -p %(django_user_home)s/configs/nginx' % env)
-    sudo('mkdir -p %(django_user_home)s/configs/supervisord' % env)
-    sudo('mkdir -p %(django_user_home)s/scripts' % env)
-    sudo('mkdir -p %(django_user_home)s/htdocs' % env)
-    sudo('mkdir -p %(django_user_home)s/tmp' % env)
+    # sudo('mkdir -p %(django_user_home)s/logs/nginx' % env)  # Not used
+    sudo('mkdir -p %s' % dirname(env.gunicorn_logfile))
+    sudo('mkdir -p %s' % dirname(env.supervisor_stdout_logfile))
+    sudo('mkdir -p %s' % dirname(env.nginx_conf_file))
+    sudo('mkdir -p %s' % dirname(env.supervisord_conf_file))
+    sudo('mkdir -p %s' % dirname(env.rungunicorn_script))
+    # sudo('mkdir -p %(django_user_home)s/tmp' % env)  # Not used
     sudo('mkdir -p %(virtenv)s' % env)
-    sudo('echo "<html><body>nothing here</body></html> " > %(django_user_home)s/htdocs/index.html' % env)
+    sudo('mkdir -p %(nginx_htdocs)s' % env)
+    sudo('echo "<html><body>nothing here</body></html> " > %(nginx_htdocs)s/index.html' % env)
 
 
 def virtenvrun(command):
@@ -311,15 +328,14 @@ def _test_nginx_conf():
 
 def _upload_nginx_conf():
     ''' upload nginx conf '''
-    nginx_file = '%(django_user_home)s/configs/nginx/%(project)s.conf' % env
     if isfile('conf/nginx.conf'):
         ''' we use user defined nginx.conf template '''
         template = 'conf/nginx.conf'
     else:
         template = '%s/conf/nginx.conf' % fagungis_path
-    upload_template(template, nginx_file,
+    upload_template(template, env.nginx_conf_file,
                     context=env, backup=False)
-    sudo('ln -sf %s /etc/nginx/sites-enabled/' % nginx_file)
+    sudo('ln -sf %s /etc/nginx/sites-enabled/' % env.nginx_conf_file)
     _test_nginx_conf()
     sudo('nginx -s reload')
 
@@ -331,15 +347,14 @@ def _reload_supervisorctl():
 
 def _upload_supervisord_conf():
     ''' upload supervisor conf '''
-    supervisord_conf_file = '%(django_user_home)s/configs/supervisord/%(project)s.conf' % env
     if isfile('conf/supervisord.conf'):
         ''' we use user defined supervisord.conf template '''
         template = 'conf/supervisord.conf'
     else:
         template = '%s/conf/supervisord.conf' % fagungis_path
-    upload_template(template, supervisord_conf_file,
+    upload_template(template, env.supervisord_conf_file,
                     context=env, backup=False)
-    sudo('ln -sf %s /etc/supervisor/conf.d/' % supervisord_conf_file)
+    sudo('ln -sf %(supervisord_conf_file)s /etc/supervisor/conf.d/%(project)s.conf' % env)
     _reload_supervisorctl()
 
 
@@ -357,15 +372,14 @@ def _prepare_media_path():
 
 def _upload_rungunicorn_script():
     ''' upload rungunicorn conf '''
-    script_file = '%(django_user_home)s/scripts/rungunicorn_%(project)s.sh' % env
     if isfile('scripts/rungunicorn.sh'):
         ''' we use user defined rungunicorn file '''
         template = 'scripts/rungunicorn.sh'
     else:
         template = '%s/scripts/rungunicorn.sh' % fagungis_path
-    upload_template(template, script_file,
+    upload_template(template, env.rungunicorn_script,
                     context=env, backup=False)
-    sudo('chmod +x %s' % script_file)
+    sudo('chmod +x %s' % env.rungunicorn_script)
 
 
 def _supervisor_restart():
