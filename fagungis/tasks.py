@@ -301,6 +301,8 @@ def _setup_directories():
     sudo('mkdir -p %(projects_path)s' % env)
     # sudo('mkdir -p %(django_user_home)s/logs/nginx' % env)  # Not used
     sudo('mkdir -p %s' % dirname(env.gunicorn_logfile))
+    sudo('chown %s %s' % (env.django_user, dirname(env.gunicorn_logfile)))
+    sudo('chmod -R 775 %s' % dirname(env.gunicorn_logfile))
     sudo('mkdir -p %s' % dirname(env.supervisor_stdout_logfile))
     sudo('mkdir -p %s' % dirname(env.nginx_conf_file))
     sudo('mkdir -p %s' % dirname(env.supervisord_conf_file))
