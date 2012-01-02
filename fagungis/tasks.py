@@ -348,7 +348,7 @@ def _upload_nginx_conf():
     # Template
     upload_template(template, env.nginx_conf_file,
                     context=context, backup=False)
-    sudo('ln -sf %s /etc/nginx/sites-enabled/' % env.nginx_conf_file)
+    sudo('ln -sf %(nginx_conf_file)s /etc/nginx/sites-enabled/%(project)s.conf' % env)
     _test_nginx_conf()
     sudo('nginx -s reload')
 
