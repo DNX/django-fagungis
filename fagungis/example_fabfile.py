@@ -34,6 +34,12 @@ def example():
     env.django_media_path = join(env.code_root, 'media')
     #  django static dir
     env.django_static_path = join(env.code_root, 'static')
+    #  django media url and root dir
+    env.django_media_url = '/site_media/media/'
+    env.django_media_root = env.code_root
+    #  django static url and root dir
+    env.django_static_url = '/site_media/static/'
+    env.django_static_root = env.code_root
     #  do you use south in your django project?
     env.south_used = False
     #  virtualenv root
