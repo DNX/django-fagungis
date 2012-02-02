@@ -1,6 +1,13 @@
 Changelog
 =============================================================
 
+Version 0.0.12
+-------------------------------------------------------------
+
+* fixed _setup_directories
+* improved media and static ngnix configuration
+* fixed gunicorn log directory permission and ownership
+
 Version 0.0.11
 -------------------------------------------------------------
 
