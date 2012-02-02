@@ -337,14 +337,6 @@ def _upload_nginx_conf():
     else:
         template = '%s/conf/nginx.conf' % fagungis_path
     context = copy(env)
-    # Media directory
-    path = env.django_media_path.rstrip('/')
-    context['django_media_location'] = basename(path)
-    context['django_media_root'] = dirname(path)
-    # Static directory
-    path = env.django_static_path.rstrip('/')
-    context['django_static_location'] = basename(path)
-    context['django_static_root'] = dirname(path)
     # Template
     upload_template(template, env.nginx_conf_file,
                     context=context, backup=False)
