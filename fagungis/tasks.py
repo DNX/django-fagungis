@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from copy import copy
 from datetime import datetime
-from os.path import join, abspath, dirname, isfile, basename
+from os.path import join, abspath, dirname, isfile
 from fabric.api import env, puts, abort, cd, hide, task
 from fabric.operations import sudo, settings, run
 from fabric.contrib import console
@@ -83,7 +83,7 @@ def deploy():
 @task
 def hg_pull():
     with cd(env.code_root):
-        run('hg pull -u')
+        sudo('hg pull -u')
 
 
 @task
@@ -258,35 +258,39 @@ def _verify_sudo():
 
 def _install_nginx():
     # add nginx stable ppa
-    sudo('add-apt-repository ppa:nginx/stable')
-    sudo('apt-get update')
-    sudo('apt-get install nginx')
-    sudo('/etc/init.d/nginx start')
+    sudo("add-apt-repository ppa:nginx/stable")
+    sudo("apt-get update")
+    sudo("apt-get -y install nginx")
+    sudo("/etc/init.d/nginx start")
 
 
 def _install_dependencies():
     ''' Ensure those Debian/Ubuntu packages are installed '''
     packages = [
-        'python-pip',
-        'supervisor',
+        "python-software-properties",
+        "python-dev",
+        "build-essential",
+        "python-pip",
+        "supervisor",
     ]
-    sudo('apt-get install %s' % ' '.join(packages))
-    if 'additional_packages' in env and env.additional_packages:
-        sudo('apt-get install %s' % ' '.join(env.additional_packages))
+    sudo("apt-get update")
+    sudo("apt-get -y install %s" % " ".join(packages))
+    if "additional_packages" in env and env.additional_packages:
+        sudo("apt-get -y install %s" % " ".join(env.additional_packages))
     _install_nginx()
-    sudo('pip install --upgrade pip')
+    sudo("pip install --upgrade pip")
 
 
 def _install_requirements():
     ''' you must have a file called requirements.txt in your project root'''
-    requirements = join(env.code_root, 'requirements.txt')
-    virtenvrun('pip install -r %s' % requirements)
+    if 'requirements_file' in env and env.requirements_file:
+        virtenvsudo('pip install -r %s' % env.requirements_file)
 
 
 def _install_gunicorn():
     """ force gunicorn installation into your virtualenv, even if it's installed globally.
     for more details: https://github.com/benoitc/gunicorn/pull/280 """
-    virtenvrun('pip install -I gunicorn')
+    virtenvsudo('pip install -I gunicorn')
 
 
 def _install_virtualenv():
@@ -300,10 +304,19 @@ def _create_virtualenv():
 def _setup_directories():
     sudo('mkdir -p %(projects_path)s' % env)
     # sudo('mkdir -p %(django_user_home)s/logs/nginx' % env)  # Not used
+    # prepare gunicorn_logfile
     sudo('mkdir -p %s' % dirname(env.gunicorn_logfile))
     sudo('chown %s %s' % (env.django_user, dirname(env.gunicorn_logfile)))
     sudo('chmod -R 775 %s' % dirname(env.gunicorn_logfile))
+    sudo('touch %s' % env.gunicorn_logfile)
+    sudo('chown %s %s' % (env.django_user, env.gunicorn_logfile))
+    # prepare supervisor_stdout_logfile
     sudo('mkdir -p %s' % dirname(env.supervisor_stdout_logfile))
+    sudo('chown %s %s' % (env.django_user, dirname(env.supervisor_stdout_logfile)))
+    sudo('chmod -R 775 %s' % dirname(env.supervisor_stdout_logfile))
+    sudo('touch %s' % env.supervisor_stdout_logfile)
+    sudo('chown %s %s' % (env.django_user, env.supervisor_stdout_logfile))
+
     sudo('mkdir -p %s' % dirname(env.nginx_conf_file))
     sudo('mkdir -p %s' % dirname(env.supervisord_conf_file))
     sudo('mkdir -p %s' % dirname(env.rungunicorn_script))
@@ -318,8 +331,13 @@ def virtenvrun(command):
     run(activate + ' && ' + command)
 
 
+def virtenvsudo(command):
+    activate = 'source %s/bin/activate' % env.virtenv
+    sudo(activate + ' && ' + command)
+
+
 def _hg_clone():
-    run('hg clone %s %s' % (env.repository, env.code_root))
+    sudo('hg clone %s %s' % (env.repository, env.code_root))
 
 
 def _test_nginx_conf():
@@ -339,7 +357,7 @@ def _upload_nginx_conf():
     context = copy(env)
     # Template
     upload_template(template, env.nginx_conf_file,
-                    context=context, backup=False)
+                    context=context, backup=False, use_sudo=True)
     sudo('ln -sf %(nginx_conf_file)s /etc/nginx/sites-enabled/%(project)s.conf' % env)
     _test_nginx_conf()
     sudo('nginx -s reload')
@@ -358,7 +376,7 @@ def _upload_supervisord_conf():
     else:
         template = '%s/conf/supervisord.conf' % fagungis_path
     upload_template(template, env.supervisord_conf_file,
-                    context=env, backup=False)
+                    context=env, backup=False, use_sudo=True)
     sudo('ln -sf %(supervisord_conf_file)s /etc/supervisor/conf.d/%(project)s.conf' % env)
     _reload_supervisorctl()
 
@@ -368,7 +386,7 @@ def _prepare_django_project():
         virtenvrun('./manage.py syncdb --noinput --verbosity=1')
         if env.south_used:
             virtenvrun('./manage.py migrate --noinput --verbosity=1')
-        virtenvrun('./manage.py collectstatic --noinput')
+        virtenvsudo('./manage.py collectstatic --noinput')
 
 
 def _prepare_media_path():
@@ -385,7 +403,7 @@ def _upload_rungunicorn_script():
     else:
         template = '%s/scripts/rungunicorn.sh' % fagungis_path
     upload_template(template, env.rungunicorn_script,
-                    context=env, backup=False)
+                    context=env, backup=False, use_sudo=True)
     sudo('chmod +x %s' % env.rungunicorn_script)
 
 
