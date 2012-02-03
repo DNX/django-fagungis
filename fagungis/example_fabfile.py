@@ -29,7 +29,7 @@ def example():
     #  the root path of your project
     env.code_root = join(env.projects_path, env.project)
     #  the path where manage.py and settings.py of this project is located
-    env.django_project_root = join(env.code_root, 'sites', 'prod')
+    env.django_project_root = env.code_root
     #  django media dir
     env.django_media_path = join(env.code_root, 'media')
     #  django static dir
@@ -46,6 +46,10 @@ def example():
     env.virtenv = join(env.django_user_home, 'envs', env.project)
     #  some virtualenv options, must have at least one
     env.virtenv_options = ['distribute', 'no-site-packages', ]
+    #  location of your pip requirements file
+    #  http://www.pip-installer.org/en/latest/requirements.html#the-requirements-file-format
+    #  set it to None to not use
+    env.requirements_file = join(env.code_root, 'requirements.txt')
     #  always ask user for confirmation when run any tasks
     env.ask_confirmation = True
 
