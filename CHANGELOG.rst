@@ -1,6 +1,17 @@
 Changelog
 =============================================================
 
+Version 0.0.13
+-------------------------------------------------------------
+
+* added assume "yes" as answer to all apt-get prompts
+* added virtenvsudo task
+* added requirements_file config, for pip requirements file location
+* added python-dev and build-essential packages to requirements
+* fixed the bug about supervisor and gunicorn log file permissions
+* changed the default value of django_project_root in example_fabfile.py
+* another bug fixes
+
 Version 0.0.12
 -------------------------------------------------------------
 
