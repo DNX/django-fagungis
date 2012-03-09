@@ -1,6 +1,17 @@
 Changelog
 =============================================================
 
+Version devel
+-------------------------------------------------------------
+
+* changed the name of nginx config file according to nginx_conf_file
+* changed the name of supervisor config file according to supervisord_conf_file
+* now upload supervisord_conf_file also in deploy task
+* added supervisor_program_name configuration
+* set nginx_client_max_body_size default to 10
+* set requirements_file default to: join(env.code_root, 'requirements.txt')
+* improved the feedback on _supervisor_restart
+
 Version 0.0.13
 -------------------------------------------------------------
 

@@ -71,6 +71,9 @@ def example():
     ### END nginx settings ###
 
     ### START supervisor settings ###
+    # http://supervisord.org/configuration.html#program-x-section-settings
+    # default: env.project
+    env.supervisor_program_name = env.project
     env.supervisorctl = '/usr/bin/supervisorctl'  # supervisorctl script
     env.supervisor_autostart = 'true'  # true or false
     env.supervisor_autorestart = 'true'  # true or false
