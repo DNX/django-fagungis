@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from copy import copy
 from datetime import datetime
-from os.path import join, abspath, dirname, isfile
+from os.path import basename, abspath, dirname, isfile, join
 from fabric.api import env, puts, abort, cd, hide, task
 from fabric.operations import sudo, settings, run
 from fabric.contrib import console
@@ -63,13 +63,14 @@ def deploy():
     if env.ask_confirmation:
         if not console.confirm("Are you sure you want to deploy in %s?" % red_bg(env.project.upper()), default=False):
             abort("Aborting at user request.")
-    puts(green_bg('Start setup...'))
+    puts(green_bg('Start deploy...'))
     start_time = datetime.now()
 
     hg_pull()
     _install_requirements()
     _upload_nginx_conf()
     _upload_rungunicorn_script()
+    _upload_supervisord_conf()
     _prepare_django_project()
     _prepare_media_path()
     _supervisor_restart()
@@ -146,6 +147,10 @@ def test_configuration(verbose=True):
         errors.append('"virtenv_options" configuration missing, you must have at least one option')
     elif verbose:
         parameters_info.append(('virtenv_options', env.virtenv_options))
+    if 'requirements_file' not in env or not env.requirements_file:
+        env.requirements_file = join(env.code_root, 'requirements.txt')
+    if verbose:
+        parameters_info.append(('requirements_file', env.requirements_file))
     if 'ask_confirmation' not in env:
         errors.append('"ask_confirmation" configuration missing')
     elif verbose:
@@ -183,15 +188,19 @@ def test_configuration(verbose=True):
     elif verbose:
         parameters_info.append(('nginx_conf_file', env.nginx_conf_file))
     if 'nginx_client_max_body_size' not in env or not env.nginx_client_max_body_size:
-        errors.append('"nginx_client_max_body_size" configuration missing')
+        env.nginx_client_max_body_size = 10
     elif not isinstance(env.nginx_client_max_body_size, int):
         errors.append('"nginx_client_max_body_size" must be an integer value')
-    elif verbose:
+    if verbose:
         parameters_info.append(('nginx_client_max_body_size', env.nginx_client_max_body_size))
     if 'nginx_htdocs' not in env or not env.nginx_htdocs:
         errors.append('"nginx_htdocs" configuration missing')
     elif verbose:
         parameters_info.append(('nginx_htdocs', env.nginx_htdocs))
+    if 'supervisor_program_name' not in env or not env.supervisor_program_name:
+        env.supervisor_program_name = env.project
+    if verbose:
+        parameters_info.append(('supervisor_program_name', env.supervisor_program_name))
     if 'supervisorctl' not in env or not env.supervisorctl:
         errors.append('"supervisorctl" configuration missing')
     elif verbose:
@@ -218,7 +227,7 @@ def test_configuration(verbose=True):
         parameters_info.append(('supervisord_conf_file', env.supervisord_conf_file))
 
     if errors:
-        if len(errors) == 26:
+        if len(errors) == 28:
             ''' all configuration missing '''
             puts('Configuration missing! Please read README.rst first or go ahead at your own risk.')
         else:
@@ -358,7 +367,8 @@ def _upload_nginx_conf():
     # Template
     upload_template(template, env.nginx_conf_file,
                     context=context, backup=False, use_sudo=True)
-    sudo('ln -sf %(nginx_conf_file)s /etc/nginx/sites-enabled/%(project)s.conf' % env)
+
+    sudo('ln -sf %s /etc/nginx/sites-enabled/%s' % (env.nginx_conf_file, basename(env.nginx_conf_file)))
     _test_nginx_conf()
     sudo('nginx -s reload')
 
@@ -377,7 +387,7 @@ def _upload_supervisord_conf():
         template = '%s/conf/supervisord.conf' % fagungis_path
     upload_template(template, env.supervisord_conf_file,
                     context=env, backup=False, use_sudo=True)
-    sudo('ln -sf %(supervisord_conf_file)s /etc/supervisor/conf.d/%(project)s.conf' % env)
+    sudo('ln -sf %s /etc/supervisor/conf.d/%s' % (env.supervisord_conf_file, basename(env.supervisord_conf_file)))
     _reload_supervisorctl()
 
 
@@ -409,8 +419,8 @@ def _upload_rungunicorn_script():
 
 def _supervisor_restart():
     with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
-        res = sudo('%(supervisorctl)s restart %(project)s' % env)
+        res = sudo('%(supervisorctl)s restart %(supervisor_program_name)s' % env)
     if 'ERROR' in res:
-        print red_bg("%s NOT STARTED!" % env.project)
+        print red_bg("%s NOT STARTED!" % env.supervisor_program_name)
     else:
-        print green_bg("%s correctly started!" % env.project)
+        print green_bg("%s correctly started!" % env.supervisor_program_name)
