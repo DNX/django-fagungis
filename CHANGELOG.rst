@@ -1,7 +1,7 @@
 Changelog
 =============================================================
 
-Version devel
+Version 0.0.14
 -------------------------------------------------------------
 
 * changed the name of nginx config file according to nginx_conf_file
@@ -11,6 +11,8 @@ Version devel
 * set nginx_client_max_body_size default to 10
 * set requirements_file default to: join(env.code_root, 'requirements.txt')
 * improved the feedback on _supervisor_restart
+* updated README.rst about github repo
+* backward compatible with 0.0.13
 
 Version 0.0.13
 -------------------------------------------------------------
