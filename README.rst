@@ -17,6 +17,14 @@ django-fagungis will install and configure for you:
 
 * virtualenv
 
+Patches are welcome! Feel free to fork and contribute to this project on:
+
+**bitbucket**: `bitbucket.org/DNX/django-fagungis <https://bitbucket.org/DNX/django-fagungis/>`_
+
+
+**github**: `github.com/DNX/django-fagungis <https://github.com/DNX/django-fagungis>`_
+
+
 Installation
 ============
 
