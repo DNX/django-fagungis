@@ -26,14 +26,14 @@ CLASSIFIERS = [
 
 setup(
     name="django-fagungis",
-    version=__import__('fagungis').__version__,
+    version=__import__('fagungis').get_version(),
     url='https://bitbucket.org/DNX/django-fagungis/wiki/Home',
     download_url='http://bitbucket.org/DNX/django-fagungis/downloads',
     license='BSD License',
     description="DJANGO + FAbric + GUnicorn + NGInx + Supervisor deployment",
     long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read(),
-    author='Darii Denis',
-    author_email='info@ddenis.com',
+    author='Denis Darii',
+    author_email='denis.darii@gmail.com',
     keywords='django fabric gunicorn nginx supervisor',
     packages=find_packages(),
     namespace_packages=['fagungis'],
