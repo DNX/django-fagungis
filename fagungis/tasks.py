@@ -197,6 +197,14 @@ def test_configuration(verbose=True):
         errors.append('"nginx_htdocs" configuration missing')
     elif verbose:
         parameters_info.append(('nginx_htdocs', env.nginx_htdocs))
+
+    if 'nginx_https' not in env:
+        env.nginx_https = False
+    elif not isinstance(env.nginx_https, bool):
+        errors.append('"nginx_https" must be a boolean value')
+    elif verbose:
+        parameters_info.append(('nginx_https', env.nginx_https))
+
     if 'supervisor_program_name' not in env or not env.supervisor_program_name:
         env.supervisor_program_name = env.project
     if verbose:
@@ -358,11 +366,14 @@ def _test_nginx_conf():
 
 def _upload_nginx_conf():
     ''' upload nginx conf '''
-    if isfile('conf/nginx.conf'):
-        ''' we use user defined nginx.conf template '''
-        template = 'conf/nginx.conf'
+    local_nginx_conf_file = 'nginx.conf'
+    if env.nginx_https:
+        local_nginx_conf_file = 'nginx_https.conf'
+    if isfile('conf/%s' % local_nginx_conf_file):
+        ''' we use user defined conf template '''
+        template = 'conf/%s' % local_nginx_conf_file
     else:
-        template = '%s/conf/nginx.conf' % fagungis_path
+        template = '%s/conf/%s' % (fagungis_path, local_nginx_conf_file)
     context = copy(env)
     # Template
     upload_template(template, env.nginx_conf_file,
