@@ -2,6 +2,8 @@
 set -e
 # go in your project root
 cd %(django_project_root)s
+# set PYTHONPATH to cwd
+export PYTHONPATH=`pwd`
 # activate the virtualenv
 source %(virtenv)s/bin/activate
 # start gunicorn with all options earlier declared in fabfile.py

@@ -128,7 +128,7 @@ def test_configuration(verbose=True):
     elif verbose:
         parameters_info.append(('Django project root', env.django_project_root))
     if 'django_project_settings' not in env or not env.django_project_settings:
-        env.django_project_settings = join(env.code_root, 'settings.py')
+        env.django_project_settings = 'settings'
     if verbose:
         parameters_info.append(('django_project_settings', env.django_project_settings))
     if 'django_media_path' not in env or not env.django_media_path:

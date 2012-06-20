@@ -30,8 +30,8 @@ def example():
     env.code_root = join(env.projects_path, env.project)
     #  the path where manage.py of this project is located
     env.django_project_root = env.code_root
-    #  path to settings file of this project
-    env.django_project_settings = join(env.code_root, 'settings.py')
+    #  the Python path to a Django settings module.
+    env.django_project_settings = 'settings'
     #  django media dir
     env.django_media_path = join(env.code_root, 'media')
     #  django static dir
