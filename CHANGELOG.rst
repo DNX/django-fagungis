@@ -1,6 +1,17 @@
 Changelog
 =============================================================
 
+Version 0.0.16
+-------------------------------------------------------------
+
+* improved compatibility with default django 1.4 project structure
+* added django_project_settings to gunicorn_django options
+
+Version 0.0.15
+-------------------------------------------------------------
+
+* added nginx_https parameter
+
 Version 0.0.14
 -------------------------------------------------------------
 
