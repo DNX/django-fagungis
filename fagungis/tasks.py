@@ -127,6 +127,10 @@ def test_configuration(verbose=True):
         errors.append('Django project root configuration missing')
     elif verbose:
         parameters_info.append(('Django project root', env.django_project_root))
+    if 'django_project_settings' not in env or not env.django_project_settings:
+        env.django_project_settings = join(env.code_root, 'settings.py')
+    if verbose:
+        parameters_info.append(('django_project_settings', env.django_project_settings))
     if 'django_media_path' not in env or not env.django_media_path:
         errors.append('Django media path configuration missing')
     elif verbose:
@@ -235,7 +239,7 @@ def test_configuration(verbose=True):
         parameters_info.append(('supervisord_conf_file', env.supervisord_conf_file))
 
     if errors:
-        if len(errors) == 28:
+        if len(errors) == 29:
             ''' all configuration missing '''
             puts('Configuration missing! Please read README.rst first or go ahead at your own risk.')
         else:
