@@ -1,6 +1,11 @@
 Changelog
 =============================================================
 
+Version 0.0.17
+-------------------------------------------------------------
+
+* now we export the PYTHONPATH in order to set settings option in the sh script for supervisor
+
 Version 0.0.16
 -------------------------------------------------------------
 
