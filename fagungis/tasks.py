@@ -370,14 +370,15 @@ def _test_nginx_conf():
 
 def _upload_nginx_conf():
     ''' upload nginx conf '''
-    local_nginx_conf_file = 'nginx.conf'
+    local_nginx_conf_file_name = 'nginx.conf'
     if env.nginx_https:
-        local_nginx_conf_file = 'nginx_https.conf'
-    if isfile('conf/%s' % local_nginx_conf_file):
+        local_nginx_conf_file_name = 'nginx_https.conf'
+    local_nginx_conf_file_path = "%s/conf/%s" % (dirname(env.real_fabfile), local_nginx_conf_file_name)
+    if isfile(local_nginx_conf_file_path):
         ''' we use user defined conf template '''
-        template = 'conf/%s' % local_nginx_conf_file
+        template = local_nginx_conf_file_path
     else:
-        template = '%s/conf/%s' % (fagungis_path, local_nginx_conf_file)
+        template = '%s/conf/%s' % (fagungis_path, local_nginx_conf_file_name)
     context = copy(env)
     # Template
     upload_template(template, env.nginx_conf_file,
@@ -395,9 +396,10 @@ def _reload_supervisorctl():
 
 def _upload_supervisord_conf():
     ''' upload supervisor conf '''
-    if isfile('conf/supervisord.conf'):
+    local_supervisord_conf_file_path = "%s/conf/supervisord.conf" % dirname(env.real_fabfile)
+    if isfile(local_supervisord_conf_file_path):
         ''' we use user defined supervisord.conf template '''
-        template = 'conf/supervisord.conf'
+        template = local_supervisord_conf_file_path
     else:
         template = '%s/conf/supervisord.conf' % fagungis_path
     upload_template(template, env.supervisord_conf_file,
