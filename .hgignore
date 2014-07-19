@@ -2,3 +2,4 @@
 FAGUNGIS.sublime-workspace
 ^django_fagungis.egg-info/
 ^dist/
+^build/
