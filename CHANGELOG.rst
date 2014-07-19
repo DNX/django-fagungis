@@ -1,6 +1,12 @@
 Changelog
 =============================================================
 
+Version 0.1.0
+-------------------------------------------------------------
+
+* load the conf files from the conf folder where real_fabfile is located
+* improved nginx configuration
+
 Version 0.0.17
 -------------------------------------------------------------
 
