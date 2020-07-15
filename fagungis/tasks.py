@@ -37,7 +37,12 @@ def setup():
     _install_dependencies()
     _create_django_user()
     _setup_directories()
-    _hg_clone()
+
+    if 'github.com' in env.repository:
+        _git_clone()
+    else:
+        _hg_clone()
+
     _install_virtualenv()
     _create_virtualenv()
     _install_gunicorn()
@@ -48,7 +53,7 @@ def setup():
 
     end_time = datetime.now()
     finish_message = '[%s] Correctly finished in %i seconds' % \
-    (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
+        (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
     puts(finish_message)
 
 
@@ -66,7 +71,10 @@ def deploy():
     puts(green_bg('Start deploy...'))
     start_time = datetime.now()
 
-    hg_pull()
+    if 'github.com' in env.repository:
+        git_pull()
+    else:
+        hg_pull()
     _install_requirements()
     _upload_nginx_conf()
     _upload_rungunicorn_script()
@@ -77,7 +85,7 @@ def deploy():
 
     end_time = datetime.now()
     finish_message = '[%s] Correctly deployed in %i seconds' % \
-    (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
+        (green_bg(end_time.strftime('%H:%M:%S')), (end_time - start_time).seconds)
     puts(finish_message)
 
 
@@ -85,6 +93,12 @@ def deploy():
 def hg_pull():
     with cd(env.code_root):
         sudo('hg pull -u')
+
+
+@task
+def git_pull():
+    with cd(env.code_root):
+        sudo('git pull')
 
 
 @task
@@ -361,6 +375,10 @@ def _hg_clone():
     sudo('hg clone %s %s' % (env.repository, env.code_root))
 
 
+def _git_clone():
+    sudo('git clone %s %s' % (env.repository, env.code_root))
+
+
 def _test_nginx_conf():
     with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
         res = sudo('nginx -t -c /etc/nginx/nginx.conf')
@@ -413,6 +431,7 @@ def _prepare_django_project():
         virtenvrun('./manage.py syncdb --noinput --verbosity=1')
         if env.south_used:
             virtenvrun('./manage.py migrate --noinput --verbosity=1')
+        virtenvrun('./manage.py compilemessages')
         virtenvsudo('./manage.py collectstatic --noinput')
 
 
