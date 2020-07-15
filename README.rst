@@ -19,9 +19,6 @@ django-fagungis will install and configure for you:
 
 Patches are welcome! Feel free to fork and contribute to this project on:
 
-**bitbucket**: `bitbucket.org/DNX/django-fagungis <https://bitbucket.org/DNX/django-fagungis/>`_
-
-
 **github**: `github.com/DNX/django-fagungis <https://github.com/DNX/django-fagungis>`_
 
 
@@ -78,6 +75,8 @@ Please pay attention to not have any tasks in your fabfile.py called:
 
 * test_configuration
 
+* git_pull
+
 or
 
 * hg_pull
@@ -103,7 +102,7 @@ we know:
 
 * the project is called **projectus**
 
-* the hg repository is **https://bitbucket.org/DNX/projectus**
+* the git repository is **git@github.com:DNX/projectus.git**
 
 * the ip of the server where you want to host it is: **88.88.88.88**
 
@@ -143,7 +142,7 @@ Now apply some changes to earlier cloned fabfile.py file in your project root:
     # from:
     env.repository = 'https://bitbucket.org/DNX/example'
     # to:
-    env.repository = 'https://bitbucket.org/DNX/projectus'
+    env.repository = 'git@github.com:DNX/projectus.git'
 
 * change server ip::
 

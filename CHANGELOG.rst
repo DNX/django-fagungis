@@ -1,6 +1,13 @@
 Changelog
 =============================================================
 
+Version 0.1.1
+-------------------------------------------------------------
+
+* added github/git support
+* added compilemessages command
+* added Daniel Mursa to authors
+
 Version 0.1.0
 -------------------------------------------------------------
 
